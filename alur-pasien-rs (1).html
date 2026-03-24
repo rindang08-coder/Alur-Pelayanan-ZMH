@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alur Penerimaan Pasien - Zahra Medika Hospital</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #0A4D68;
+    --secondary: #088395;
+    --accent: #05BFDB;
+    --warm: #00FFCA;
+    --light: #E8F9FF;
+    --bg: #F0FAFA;
+    --white: #ffffff;
+    --gray: #6B8591;
+    --dark: #062D3F;
+    --warning: #FFB347;
+    --success: #2ECC71;
+    --danger: #E74C3C;
+    --inpatient: #7B2FBE;
+    --inpatient-light: #F3E8FF;
+    --outpatient: #0A6640;
+    --outpatient-light: #E6F7EE;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--bg);
+    color: var(--dark);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 60%, var(--accent) 100%);
+    padding: 40px 60px 50px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.07);
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: 30%;
+    width: 400px; height: 200px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+  }
+  .header-inner { position: relative; z-index: 1; }
+
+  .header-logo-row {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+  }
+  .header-logo {
+    height: 90px;
+    width: auto;
+    background: white;
+    border-radius: 14px;
+    padding: 8px 14px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    flex-shrink: 0;
+  }
+  .header-divider {
+    width: 2px;
+    height: 80px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  @media (max-width: 600px) {
+    .header-logo-row { flex-direction: column; align-items: flex-start; gap: 16px; }
+    .header-divider { display: none; }
+    .header-logo { height: 60px; }
+  }
+
+  .header-tag {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    color: var(--warm);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 38px;
+    color: white;
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+  .header p {
+    color: rgba(255,255,255,0.75);
+    font-size: 15px;
+    max-width: 560px;
+    line-height: 1.6;
+  }
+
+  /* TABS */
+  .tab-container {
+    display: flex;
+    gap: 0;
+    padding: 0 60px;
+    background: var(--primary);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 20px rgba(10,77,104,0.25);
+  }
+  .tab-btn {
+    padding: 16px 32px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.55);
+    border-bottom: 3px solid transparent;
+    transition: all 0.25s ease;
+    letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tab-btn:hover { color: rgba(255,255,255,0.9); }
+  .tab-btn.active {
+    color: var(--warm);
+    border-bottom-color: var(--warm);
+  }
+  .tab-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.7;
+  }
+
+  /* CONTENT */
+  .content { padding: 40px 60px 60px; }
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; animation: fadeIn 0.35s ease; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    color: var(--primary);
+    margin-bottom: 6px;
+  }
+  .section-sub {
+    color: var(--gray);
+    font-size: 14px;
+    margin-bottom: 32px;
+  }
+
+  /* FLOW DIAGRAM */
+  .flow-container { display: flex; flex-direction: column; gap: 0; }
+
+  .flow-phase {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 8px;
+    position: relative;
+  }
+
+  .phase-label {
+    width: 120px;
+    min-width: 120px;
+    text-align: right;
+    padding-top: 18px;
+    padding-right: 16px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gray);
+    position: relative;
+  }
+  .phase-label::after {
+    content: '';
+    position: absolute;
+    right: 0; top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, transparent, #CBD8DE, transparent);
+  }
+
+  .flow-steps {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 0;
+  }
+
+  .step-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    position: relative;
+  }
+
+  /* CONNECTOR LINE */
+  .step-row:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 19px;
+    top: 44px;
+    width: 2px;
+    height: calc(100% + 8px);
+    background: linear-gradient(to bottom, var(--accent), transparent);
+    z-index: 0;
+  }
+
+  .step-icon {
+    width: 40px; height: 40px;
+    min-width: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  }
+
+  .step-card {
+    flex: 1;
+    background: var(--white);
+    border-radius: 14px;
+    padding: 16px 20px;
+    box-shadow: 0 2px 12px rgba(10,77,104,0.07);
+    border: 1px solid rgba(10,77,104,0.07);
+    transition: all 0.2s ease;
+    cursor: default;
+  }
+  .step-card:hover {
+    box-shadow: 0 6px 24px rgba(10,77,104,0.13);
+    transform: translateX(4px);
+    border-color: var(--accent);
+  }
+
+  .step-title {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--dark);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .step-desc {
+    font-size: 12.5px;
+    color: var(--gray);
+    line-height: 1.65;
+  }
+
+  .step-tasks {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .task-chip {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: var(--light);
+    color: var(--secondary);
+    border: 1px solid rgba(8,131,149,0.15);
+  }
+
+  .task-chip.doc { background: #FFF3E0; color: #E65100; border-color: #FFB74D44; }
+  .task-chip.check { background: #E8F5E9; color: #2E7D32; border-color: #81C78444; }
+  .task-chip.pay { background: #FCE4EC; color: #C62828; border-color: #EF9A9A44; }
+  .task-chip.info { background: #E3F2FD; color: #1565C0; border-color: #90CAF944; }
+
+  /* DECISION DIAMOND */
+  .decision-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin: 4px 0 4px 52px;
+    position: relative;
+  }
+  .diamond {
+    background: linear-gradient(135deg, var(--warning), #FF8C00);
+    color: white;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 10px 20px;
+    clip-path: polygon(15px 0%, calc(100% - 15px) 0%, 100% 50%, calc(100% - 15px) 100%, 15px 100%, 0% 50%);
+    text-align: center;
+    min-width: 200px;
+    box-shadow: 0 3px 12px rgba(255,179,71,0.4);
+  }
+
+  .branch-yes, .branch-no {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+  }
+  .branch-yes { background: var(--success); color: white; }
+  .branch-no { background: var(--danger); color: white; }
+
+  .arrow-down {
+    display: flex;
+    justify-content: center;
+    margin: 2px 0 2px 52px;
+    color: var(--accent);
+    font-size: 20px;
+  }
+
+  /* BADGES */
+  .badge-important {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #FFF3CD;
+    color: #856404;
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    border: 1px solid #FFE08A;
+  }
+
+  /* PARALLEL STEPS */
+  .parallel-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 0 0 8px 52px;
+  }
+  .parallel-label {
+    text-align: center;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 6px;
+  }
+  .parallel-card {
+    background: var(--white);
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 2px 12px rgba(10,77,104,0.07);
+    border: 1px solid rgba(10,77,104,0.07);
+  }
+
+  /* COLORS */
+  .icon-blue { background: linear-gradient(135deg, #0A4D68, #088395); }
+  .icon-teal { background: linear-gradient(135deg, #088395, #05BFDB); }
+  .icon-green { background: linear-gradient(135deg, #0A6640, #2ECC71); }
+  .icon-purple { background: linear-gradient(135deg, #7B2FBE, #A855F7); }
+  .icon-orange { background: linear-gradient(135deg, #E65100, #FFB347); }
+  .icon-red { background: linear-gradient(135deg, #C62828, #E74C3C); }
+  .icon-cyan { background: linear-gradient(135deg, #05BFDB, #00FFCA); }
+  .icon-gray { background: linear-gradient(135deg, #4A6270, #6B8591); }
+
+  /* OUTPATIENT vs INPATIENT DIVIDER */
+  .type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    border-radius: 24px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    margin-bottom: 20px;
+  }
+  .badge-out { background: var(--outpatient-light); color: var(--outpatient); border: 1.5px solid #82C9A0; }
+  .badge-in { background: var(--inpatient-light); color: var(--inpatient); border: 1.5px solid #C084FC; }
+
+  /* TIPS BOX */
+  .tips-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 32px;
+  }
+  .tip-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid rgba(10,77,104,0.08);
+    box-shadow: 0 2px 12px rgba(10,77,104,0.06);
+  }
+  .tip-icon { font-size: 28px; margin-bottom: 10px; }
+  .tip-title { font-weight: 700; font-size: 13px; color: var(--dark); margin-bottom: 6px; }
+  .tip-text { font-size: 12px; color: var(--gray); line-height: 1.65; }
+
+  /* EMERGENCY */
+  .emergency-bar {
+    background: linear-gradient(90deg, #C62828, #E53935);
+    color: white;
+    border-radius: 14px;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 16px rgba(198,40,40,0.3);
+  }
+  .emergency-bar .em-icon { font-size: 28px; }
+  .emergency-bar strong { font-size: 14px; display: block; margin-bottom: 2px; }
+  .emergency-bar span { font-size: 12px; opacity: 0.85; }
+
+  /* CHECKLIST BOX */
+  .checklist-box {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid rgba(10,77,104,0.08);
+    box-shadow: 0 2px 12px rgba(10,77,104,0.06);
+    margin-bottom: 24px;
+  }
+  .checklist-title {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--dark);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .checklist-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 20px;
+  }
+  .checklist-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--dark);
+    line-height: 1.5;
+  }
+  .check-mark {
+    width: 18px; height: 18px;
+    min-width: 18px;
+    border-radius: 5px;
+    background: var(--secondary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    margin-top: 2px;
+  }
+
+  /* OVERVIEW CARDS */
+  .overview-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .ov-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid rgba(10,77,104,0.08);
+    box-shadow: 0 2px 12px rgba(10,77,104,0.06);
+  }
+  .ov-num { font-family: 'Playfair Display', serif; font-size: 36px; color: var(--secondary); line-height: 1; margin-bottom: 4px; }
+  .ov-label { font-size: 11px; color: var(--gray); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .header { padding: 30px 24px 40px; }
+    .header h1 { font-size: 26px; }
+    .content { padding: 24px; }
+    .tab-container { padding: 0 24px; overflow-x: auto; }
+    .overview-grid { grid-template-columns: repeat(2,1fr); }
+    .tips-grid { grid-template-columns: 1fr; }
+    .parallel-container { grid-template-columns: 1fr; }
+    .checklist-grid { grid-template-columns: 1fr; }
+    .phase-label { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-logo-row">
+      <img src="data:image/jpeg;base64,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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIAAwAAACEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACAAMAAAAQ88888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888688y088888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888Dghz/wDPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPvHGFKPfPPPPPPPPPfffdvOufPOePPeffvdsvPOufPPPPPvPPNdOffffvvfOPOfd9N+NOPPfffPPPPPPPPPPPPPPPPPPPPPPPPNixLZFP82WH+dvPPPPAQzAFfAw/PA1fK1/6iyQ9fAw/PPPPCQvOw36QxjV6gAAAqw9qPYwfPMA8fPPPPPPPPPPPPPPPPPPPPPPJT1NFUHZKSKbVNVUPPPPPPYL/AD4QzPwND+5f+pT+HX4QzPzzy+RrSgTGkNPLypXysCoNajqQ7zyOYTfzzzzzzzzzzzzzzzzzzzzytRXwH0iIpjHVRxHwhPzzzjoHzyVb0XYMc89f+oEIFaVb0XbzyoKJQs1OkMBTSpXy0GINagNLzyoR0j7zzzzzzzzzzzzzzzzzzzzzHgni2jRA7ib0jimi2zzzzYN7zwgLENYNc8hf+o4AzwgLENbzztf4JHpCsN7zypXzQIgNaj8BrzlLGBHzzzzzzzzzzzzzzzzzzzzyijWhehhc9OOSSTWxXT/zgIAMM0Tf4LENXytf+pRpewTf4LHzxNS8mT0MsOMNWoIIaysNaj1pLWB/7wXfzzzzzzzzzzzzzzzzzzzz3VTQjc88vLKc8BVR1B7yy000/wDN888ddd8vNcv8uPdN888d88Mf8f8AfD3jzTXbjTzPPzXrXvLTj/fPD3fPPPPPPPPPPPPPPPPPPPMUfANpzz08sp29VCObtfPN/wD3zzfvzzzznTXjzzzzzPXX3zzf/wD29888y787/wD/AP8A/wDvPPf/APzzzz/jzzzzzzzzzzzzzzzzzzzzzzzwQri0e44LrLc9OIjWpx/zxMH3zysBXzjCEEEADXzzgEEEL/zsEEHPbzwtbykEEEEFXzxIELzzykGHzzzzzzzzzzzzzzzzzzzzzzzy79JGTaYPLLJe6eFGdfzzwMH3zysBXygEY4cIHHzqAZ28uTysAkYgB3ytbyEIUEEJfz2oFH/zykEHzzzzzzzzzzzzzzzzzzzzzzzzzDRxN2DvLOIwn/P0B/zzwMH3zysBX2AT/wA8urB+oBB88988rA98qBI8rW888oBo8889BHBN88pBB88888888888888888888888888g5opsbYszcJ8I998888DBRxxCAV5BH8888LBVtLBSAc88rA88tBE8rW888oBo888TEHKH88pBB88888888888888888888888888vk0tU1C/ootoyt88888DBAAAIAV8BS8888ABW8+uLBBT8rByCAAW8rW888oBo88pDA8GB+8pBB888888888888888888888888888/QUdRxpksVo8888888DB988rAVoAG+888qA28x185BR8rBNHBl88rW888oBo88mBQwgBw8pBB88888888888888888888888888888M59ttUVVu8888888DB988rAV8EBj5wDBf8KAU93BQ8rA988888rW888oBo88oFBBDIS8pBRww3888888888888888888888888888N+VQ8D+88888888DA988rAV88LABBEWd8slBBBHN8rA988888rW888oAo8uhV888qB/pBAAAU8888888888888888888888888888ueo1f888888888e8988u8d888/OOu8888sNuO/8APHvPfPPPPPLfPPL/AD7zzz7zzz/x6zzzzz/zzzzzzzzzzzzzzzzzzzzzzzzzzzzyr7zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz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" alt="Zahra Medika Hospital" class="header-logo" />
+      <div class="header-divider"></div>
+      <div>
+        <div class="header-tag">📋 SOP Penerimaan Pasien</div>
+        <h1>Alur Pelayanan Pasien<br>Rawat Jalan & Rawat Inap</h1>
+        <p>Panduan operasional standar untuk staf <strong style="color:var(--warm)">Zahra Medika Hospital</strong> dalam menerima, memproses, dan melayani pasien secara efektif dengan mengutamakan kenyamanan pasien dan keluarga.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-container">
+  <button class="tab-btn active" onclick="switchTab('overview')">
+    <span class="tab-dot"></span> Overview
+  </button>
+  <button class="tab-btn" onclick="switchTab('rawatjalan')">
+    <span class="tab-dot"></span> Rawat Jalan
+  </button>
+  <button class="tab-btn" onclick="switchTab('rawatinap')">
+    <span class="tab-dot"></span> Rawat Inap
+  </button>
+  <button class="tab-btn" onclick="switchTab('dokumen')">
+    <span class="tab-dot"></span> Checklist Dokumen
+  </button>
+  <button class="tab-btn" onclick="switchTab('tips')">
+    <span class="tab-dot"></span> Tips & Standar Layanan
+  </button>
+</div>
+
+<div class="content">
+
+  <!-- ============ OVERVIEW ============ -->
+  <div class="tab-pane active" id="tab-overview">
+    <div class="section-title">Gambaran Umum Alur Pelayanan</div>
+    <p class="section-sub">Ringkasan proses penerimaan pasien di seluruh unit pelayanan rumah sakit.</p>
+
+    <div class="overview-grid">
+      <div class="ov-card">
+        <div class="ov-num">7</div>
+        <div class="ov-label">Tahap Rawat Jalan</div>
+      </div>
+      <div class="ov-card">
+        <div class="ov-num">8</div>
+        <div class="ov-label">Tahap Rawat Inap</div>
+      </div>
+      <div class="ov-card">
+        <div class="ov-num">≤15'</div>
+        <div class="ov-label">Target Waktu Admisi</div>
+      </div>
+      <div class="ov-card">
+        <div class="ov-num">24/7</div>
+        <div class="ov-label">Layanan IGD</div>
+      </div>
+    </div>
+
+    <div class="emergency-bar">
+      <div class="em-icon">🚨</div>
+      <div>
+        <strong>Kondisi Darurat / Gawat Darurat</strong>
+        <span>Pasien dengan kondisi mengancam jiwa LANGSUNG diarahkan ke IGD — proses administrasi dilakukan SETELAH kondisi pasien stabil. Prinsip: STABILISASI dulu, administrasi kemudian.</span>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+      <div style="background:var(--outpatient-light); border-radius:16px; padding:24px; border:1.5px solid #82C9A0;">
+        <div style="font-size:24px; margin-bottom:10px;">🏥</div>
+        <div style="font-weight:700; font-size:16px; color:var(--outpatient); margin-bottom:8px;">Rawat Jalan (Poliklinik)</div>
+        <ul style="font-size:13px; color:#2D6A4F; line-height:1.9; padding-left:16px;">
+          <li>Pasien datang tanpa menginap</li>
+          <li>Registrasi → Pemeriksaan → Pulang/Rujuk</li>
+          <li>Pendaftaran bisa online/langsung</li>
+          <li>Berlaku untuk pasien umum & JKN/BPJS</li>
+          <li>Estimasi durasi: 1–3 jam</li>
+        </ul>
+      </div>
+      <div style="background:var(--inpatient-light); border-radius:16px; padding:24px; border:1.5px solid #C084FC;">
+        <div style="font-size:24px; margin-bottom:10px;">🛏️</div>
+        <div style="font-weight:700; font-size:16px; color:var(--inpatient); margin-bottom:8px;">Rawat Inap (Hospitalisasi)</div>
+        <ul style="font-size:13px; color:#5B21B6; line-height:1.9; padding-left:16px;">
+          <li>Pasien memerlukan perawatan minimal 1 malam</li>
+          <li>Masuk via IGD, Poliklinik, atau langsung</li>
+          <li>Informed consent wajib ditandatangani</li>
+          <li>Proses admisi lebih lengkap & detail</li>
+          <li>Pemilihan kelas kamar sesuai hak/kemampuan</li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="margin-top:24px; background:var(--white); border-radius:16px; padding:24px; border:1px solid rgba(10,77,104,0.08); box-shadow:0 2px 12px rgba(10,77,104,0.06);">
+      <div style="font-weight:700; font-size:15px; color:var(--dark); margin-bottom:14px;">🎯 Prinsip Utama Pelayanan</div>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px;">
+        <div style="text-align:center; padding:14px; background:var(--bg); border-radius:12px;">
+          <div style="font-size:22px; margin-bottom:6px;">⚡</div>
+          <div style="font-weight:700; font-size:13px; color:var(--primary);">Cepat & Efisien</div>
+          <div style="font-size:11.5px; color:var(--gray); margin-top:4px;">Minimalkan waktu tunggu, proses paralel</div>
+        </div>
+        <div style="text-align:center; padding:14px; background:var(--bg); border-radius:12px;">
+          <div style="font-size:22px; margin-bottom:6px;">💚</div>
+          <div style="font-weight:700; font-size:13px; color:var(--primary);">Empati & Ramah</div>
+          <div style="font-size:11.5px; color:var(--gray); margin-top:4px;">Sapa, senyum, sambut setiap pasien</div>
+        </div>
+        <div style="text-align:center; padding:14px; background:var(--bg); border-radius:12px;">
+          <div style="font-size:22px; margin-bottom:6px;">📋</div>
+          <div style="font-weight:700; font-size:13px; color:var(--primary);">Tertib Administrasi</div>
+          <div style="font-size:11.5px; color:var(--gray); margin-top:4px;">Data akurat, dokumen lengkap, rekam medis aman</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ RAWAT JALAN ============ -->
+  <div class="tab-pane" id="tab-rawatjalan">
+    <div class="type-badge badge-out">🏥 Alur Rawat Jalan (Poliklinik)</div>
+
+    <div class="flow-container">
+
+      <!-- FASE 1: KEDATANGAN -->
+      <div class="flow-phase">
+        <div class="phase-label">Kedatangan</div>
+        <div class="flow-steps">
+
+          <div class="step-row">
+            <div class="step-icon icon-teal">👋</div>
+            <div class="step-card">
+              <div class="step-title">1. Penyambutan Pasien <span class="badge-important">⭐ Kesan Pertama</span></div>
+              <div class="step-desc">Petugas Customer Service / Security menyambut pasien di pintu masuk. Sapa dengan senyum, tanyakan kebutuhan pasien, dan arahkan ke loket yang tepat.</div>
+              <div class="step-tasks">
+                <span class="task-chip check">Sapa & senyum</span>
+                <span class="task-chip info">Tanyakan kebutuhan</span>
+                <span class="task-chip info">Arahkan ke loket</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-row">
+            <div class="step-icon icon-blue">🎫</div>
+            <div class="step-card">
+              <div class="step-title">2. Pengambilan Nomor Antrian</div>
+              <div class="step-desc">Pasien mengambil nomor antrian (mesin antrian otomatis atau manual). Bedakan antrian: pasien baru, pasien lama, lansia/disabilitas (prioritas), dan pasien BPJS/asuransi.</div>
+              <div class="step-tasks">
+                <span class="task-chip check">Antrian Prioritas: Lansia, Ibu Hamil, Disabilitas</span>
+                <span class="task-chip info">Antrian online tersedia</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- FASE 2: REGISTRASI -->
+      <div class="flow-phase">
+        <div class="phase-label">Registrasi</div>
+        <div class="flow-steps">
+
+          <div class="decision-row">
+            <div class="diamond">Pasien Baru atau Pasien Lama?</div>
+          </div>
+
+          <div class="parallel-container">
+            <div class="parallel-card">
+              <div class="parallel-label" style="color:var(--outpatient)">🆕 Pasien Baru</div>
+              <div class="step-tasks" style="flex-direction:column; gap:5px;">
+                <span class="task-chip doc">KTP / Identitas diri</span>
+                <span class="task-chip doc">Kartu BPJS / Asuransi (jika ada)</span>
+                <span class="task-chip check">Isi formulir pendaftaran</span>
+                <span class="task-chip info">Buat nomor RM baru</span>
+                <span class="task-chip info">Buat kartu berobat pasien</span>
+              </div>
+            </div>
+            <div class="parallel-card">
+              <div class="parallel-label" style="color:var(--secondary)">🔄 Pasien Lama</div>
+              <div class="step-tasks" style="flex-direction:column; gap:5px;">
+                <span class="task-chip doc">Kartu berobat / No. RM</span>
+                <span class="task-chip check">Verifikasi data di sistem</span>
+                <span class="task-chip info">Update data jika ada perubahan</span>
+                <span class="task-chip info">Ambil rekam medis dari arsip</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-row" style="margin-top:8px;">
+            <div class="step-icon icon-purple">💳</div>
+            <div class="step-card">
+              <div class="step-title">3. Verifikasi Jaminan Pembayaran</div>
+              <div class="step-desc">Tentukan jenis pembayaran pasien dan lakukan verifikasi sesuai prosedur masing-masing.</div>
+              <div class="step-tasks">
+                <span class="task-chip pay">Pasien Umum → estimasi biaya</span>
+                <span class="task-chip check">BPJS → cek eligibilitas online</span>
+                <span class="task-chip info">Asuransi → hubungi penjamin</span>
+                <span class="task-chip doc">Surat rujukan (jika BPJS)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-row">
+            <div class="step-icon icon-cyan">🏥</div>
+            <div class="step-card">
+              <div class="step-title">4. Penentuan Poli & Input Data Sistem</div>
+              <div class="step-desc">Konfirmasi poliklinik tujuan, jadwal dan ketersediaan dokter. Input seluruh data registrasi ke sistem informasi RS (SIMRS). Cetak label identitas pasien.</div>
+              <div class="step-tasks">
+                <span class="task-chip check">Cek jadwal dokter</span>
+                <span class="task-chip info">Input ke SIMRS</span>
+                <span class="task-chip doc">Cetak label identitas</span>
+                <span class="task-chip doc">Buat berkas rekam medis</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- FASE 3: PRA-PEMERIKSAAN -->
+      <div class="flow-phase">
+        <div class="phase-label">Pra-Periksa</div>
+        <div class="flow-steps">
+
+          <div class="step-row">
+            <div class="step-icon icon-green">⚕️</div>
+            <div class="step-card">
+              <div class="step-title">5. Skrining Awal & Triage (Triase)</div>
+              <div class="step-desc">Perawat melakukan asesmen awal: anamnesis singkat, tanda-tanda vital (TD, nadi, suhu, RR, SpO₂), berat badan, tinggi badan. Identifikasi keluhan utama. Pasang gelang identitas pasien.</div>
+              <div class="step-tasks">
+                <span class="task-chip check">Tanda vital lengkap</span>
+                <span class="task-chip check">Alergi & riwayat obat</span>
+                <span class="task-chip info">Pasang gelang identitas</span>
+                <span class="task-chip doc">Catat di rekam medis</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-row">
+            <div class="step-icon icon-orange">⏳</div>
+            <div class="step-card">
+              <div class="step-title">6. Menunggu & Manajemen Antrian Poli</div>
+              <div class="step-desc">Pasien menunggu di ruang tunggu poli. Informasikan estimasi waktu tunggu. Sediakan kursi nyaman, TV/hiburan, minuman. Pantau kondisi pasien di ruang tunggu.</div>
+              <div class="step-tasks">
+                <span class="task-chip info">Informasikan estimasi tunggu</span>
+                <span class="task-chip check">Pantau kondisi pasien</span>
+                <span class="task-chip check">Sediakan fasilitas nyaman</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- FASE 4: PEMERIKSAAN -->
+      <div class="flow-phase">
+        <div class="phase-label">Pemeriksaan</div>
+        <div class="flow-steps">
+
+          <div class="step-row">
+            <div class="step-icon icon-blue">👨‍⚕️</div>
+            <div class="step-card">
+              <div class="step-title">7. Pemeriksaan oleh Dokter</div>
+              <div class="step-desc">Dokter melakukan anamnesis lengkap dan pemeriksaan fisik. Dokter menetapkan diagnosis sementara/kerja. Penulisan resep, permintaan penunjang (lab/radiologi), atau surat rujukan jika diperlukan.</div>
+              <div class="step-tasks">
+                <span class="task-chip doc">Resep dokter</span>
+                <span class="task-chip doc">Form penunjang (jika perlu)</span>
+                <span class="task-chip doc">Surat rujukan (jika perlu)</span>
+                <span class="task-chip info">Edukasi pasien</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- FASE 5: PENUNJANG (OPSIONAL) -->
+      <div class="flow-phase">
+        <div class="phase-label">Penunjang</div>
+        <div class="flow-steps">
+
+          <div class="decision-row">
+            <div class="diamond">Diperlukan Pemeriksaan Penunjang?</div>
+          </div>
+
+          <div class="parallel-container">
+            <div class="parallel-card">
+              <div class="parallel-label" style="color:#1565C0">🔬 Laboratorium</div>
+              <div style="font-size:12px; color:var(--gray);">Pasien ke unit lab → pengambilan sampel → hasil dikirim ke dokter/SIMRS → dokter evaluasi hasil</div>
+            </div>
+            <div class="parallel-card">
+              <div class="parallel-label" style="color:#4A148C">📷 Radiologi / Imaging</div>
+              <div style="font-size:12px; color:var(--gray);">Pasien ke unit radiologi → foto/USG/CT → hasil dibaca radiolog → hasil ke dokter pengirim</div>
+            </div>
+          </div>
+
+          <div class="arrow-down">↓</div>
+          <div style="text-align:center; font-size:12px; color:var(--gray); margin:0 52px 8px; font-style:italic;">Dokter menerima hasil penunjang dan menetapkan diagnosis akhir serta rencana terapi</div>
+
+        </div>
+      </div>
+
+      <!-- FASE 6: PENUTUP -->
+      <div class="flow-phase">
+        <div class="phase-label">Penyelesaian</div>
+        <div class="flow-steps">
+
+          <div class="decision-row">
+            <div class="diamond">Keputusan Dokter?</div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin:0 0 8px 52px;">
+            <div class="parallel-card" style="border-top:3px solid var(--success);">
+              <div style="font-size:22px; margin-bottom:6px;">🏠</div>
+              <div style="font-weight:700; font-size:12px; color:var(--success); margin-bottom:6px;">RAWAT JALAN / PULANG</div>
+              <div style="font-size:11px; color:var(--gray);">Resep → Farmasi → Bayar → Edukasi → Pulang</div>
+            </div>
+            <div class="parallel-card" style="border-top:3px solid var(--inpatient);">
+              <div style="font-size:22px; margin-bottom:6px;">🛏️</div>
+              <div style="font-weight:700; font-size:12px; color:var(--inpatient); margin-bottom:6px;">RAWAT INAP</div>
+              <div style="font-size:11px; color:var(--gray);">Surat admission → Lanjut ke Alur Rawat Inap</div>
+            </div>
+            <div class="parallel-card" style="border-top:3px solid var(--warning);">
+              <div style="font-size:22px; margin-bottom:6px;">🔀</div>
+              <div style="font-weight:700; font-size:12px; color:#856404; margin-bottom:6px;">RUJUKAN</div>
+              <div style="font-size:11px; color:var(--gray);">Surat rujukan → Koordinasi RS tujuan → Antar pasien</div>
+            </div>
+          </div>
+
+          <div class="step-row">
+            <div class="step-icon icon-orange">💊</div>
+            <div class="step-card">
+              <div class="step-title">8. Pengambilan Obat di Farmasi</div>
+              <div class="step-desc">Pasien menyerahkan resep ke apotek/farmasi RS. Verifikasi resep, siapkan obat, berikan KIE (komunikasi, informasi, edukasi) penggunaan obat kepada pasien dan keluarga.</div>
+              <div class="step-tasks">
+                <span class="task-chip check">Verifikasi resep</span>
+                <span class="task-chip info">KIE penggunaan obat</span>
+                <span class="task-chip doc">Etiket obat lengkap</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-row">
+            <div class="step-icon icon-red">💰</div>
+            <div class="step-card">
+              <div class="step-title">9. Penyelesaian Administrasi & Pembayaran</div>
+              <div class="step-desc">Petugas kasir menyiapkan rincian tagihan. Untuk pasien BPJS: pastikan semua berkas klaim lengkap. Untuk pasien umum/asuransi: proses pembayaran atau klaim. Berikan kwitansi resmi dan struk detail.</div>
+              <div class="step-tasks">
+                <span class="task-chip pay">Siapkan rincian tagihan</span>
+                <span class="task-chip doc">Kwitansi & struk resmi</span>
+                <span class="task-chip check">Berkas klaim BPJS lengkap</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-row">
+            <div class="step-icon icon-green">👋</div>
+            <div class="step-card">
+              <div class="step-title">10. Edukasi & Pelepasan Pasien</div>
+              <div class="step-desc">Berikan penjelasan mengenai kondisi penyakit, cara minum obat, aktivitas yang dibolehkan/dilarang, jadwal kontrol, dan tanda-tanda bahaya yang harus diwaspadai. Sampaikan salam perpisahan dengan ramah.</div>
+              <div class="step-tasks">
+                <span class="task-chip info">Edukasi kondisi & obat</span>
+                <span class="task-chip check">Jadwal kontrol ulang</span>
+                <span class="task-chip info">Tanda bahaya yang diwaspadai</span>
+                <span class="task-chip doc">Surat keterangan sakit (jika perlu)</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============ RAWAT INAP ============ -->
+  <div class="tab-pane" id="tab-rawatinap">
+    <div class="type-badge badge-in">🛏️ Alur Rawat Inap (Hospitalisasi)</div>
+
+    <div class="emergency-bar" style="background:linear-gradient(90deg,#0A4D68,#088395);">
+      <div class="em-icon">ℹ️</div>
+      <div>
+        <strong>Sumber Masuk Rawat Inap</strong>
+        <span>Pasien bisa masuk rawat inap melalui: (1) Rekomendasi dokter dari Poliklinik, (2) IGD setelah stabil, atau (3) Permintaan langsung / rujukan dari RS lain.</span>
+      </div>
+    </div>
+
+    <div class="flow-container">
+
+      <!-- FASE 1: ADMISI -->
+      <div class="flow-phase">
+        <div class="phase-label">Admisi</div>
+        <div class="flow-steps">
+
+          <div class="step-row">
+            <div class="step-icon icon-blue">📝</div>
+            <div class="step-card">
+              <div class="step-title">1. Penerimaan Surat Pengantar Rawat Inap <span class="badge-important">⭐ Kritis</span></div>
+              <div class="step-desc">Petugas admisi menerima surat pengantar rawat inap dari dokter. Verifikasi kelengkapan surat (diagnosis, rencana terapi, kelas kamar yang direkomendasikan, tanda tangan dokter).</div>
+              <div class="step-tasks">
+                <span class="task-chip doc">Surat pengantar dokter</span>
+                <span class="task-chip doc">Rekam medis/resume poli/IGD</span>
+                <span class="task-chip check">Identitas pasien lengkap</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-row">
+            <div class="step-icon icon-purple">🛏️</div>
+            <div class="step-card">
+              <div class="step-title">2. Penentuan & Pemesanan Kamar</div>
+              <div class="step-desc">Cek ketersediaan kamar di SIMRS. Tawarkan pilihan kelas kamar sesuai hak jaminan (BPJS) atau kemampuan (pasien umum). Jelaskan fasilitas masing-masing kelas dengan jelas dan ramah. Pastikan kamar siap (housekeeping sudah membersihkan).</div>
+              <div class="step-tasks">
+                <span class="task-chip info">Kelas I / II / III</span>
+                <span class="task-chip info">VIP / VVIP</span>
+                <span class="task-chip check">Kamar isolasi (jika infeksius)</span>
+                <span class="task-chip check">Pastikan kamar bersih & siap</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-row">
+            <div class="step-icon icon-orange">📋</div>
+            <div class="step-card">
+              <div class="step-title">3. Penjelasan Hak & Kewajiban Pasien</div>
+              <div class="step-desc">Petugas admisi atau perawat menjelaskan hak dan kewajiban pasien selama dirawat. Pastikan pasien dan keluarga memahami dengan bahasa yang mudah dimengerti. Berikan brosur/leaflet panduan rawat inap.</div>
+              <div class="step-tasks">
+                <span class="task-chip info">Hak pasien & keluarga</span>
+                <span class="task-chip info">Peraturan RS (jam besuk, dll)</span>
+                <span class="task-chip doc">Brosur panduan rawat inap</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- FASE 2: ADMINISTRASI -->
+      <div class="flow-phase">
+        <div class="phase-label">Administrasi</div>
+        <div class="flow-steps">
+
+          <div class="step-row">
+            <div class="step-icon icon-red">✍️</div>
+            <div class="step-card">
+              <div class="step-title">4. Penandatanganan Informed Consent <span class="badge-important">⭐ Wajib</span></div>
+              <div class="step-desc">Dokter atau perawat menjelaskan rencana tindakan, diagnosis, risiko, dan alternatif pengobatan. Pasien/wali yang kompeten menandatangani formulir persetujuan tindakan. Simpan asli di rekam medis, berikan salinan ke pasien.</div>
+              <div class="step-tasks">
+                <span class="task-chip doc">General consent (umum)</span>
+                <span class="task-chip doc">Consent tindakan khusus</span>
+                <span class="task-chip check">TTD pasien ATAU wali sah</span>
+                <span class="task-chip info">Saksi 1 orang</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-row">
+            <div class="step-icon icon-purple">💳</div>
+            <div class="step-card">
+              <div class="step-title">5. Verifikasi Jaminan & Uang Muka</div>
+              <div class="step-desc">Verifikasi jenis pembayaran secara detail. Untuk pasien umum: minta uang muka sesuai estimasi biaya. Untuk BPJS: lengkapi berkas SEP (Surat Eligibilitas Peserta). Untuk asuransi swasta: hubungi penjamin untuk approval.</div>
+              <div class="step-tasks">
+                <span class="task-chip pay">Uang muka (pasien umum)</span>
+                <span class="task-chip doc">SEP BPJS</span>
+                <span class="task-chip check">Approval letter (asuransi)</span>
+                <span class="task-chip doc">Surat jaminan perusahaan</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- FASE 3: TRANSFER KE RUANG RAWAT -->
+      <div class="flow-phase">
+        <div class="phase-label">Transfer</div>
+        <div class="flow-steps">
+
+          <div class="step-row">
+            <div class="step-icon icon-teal">🚶</div>
+            <div class="step-card">
+              <div class="step-title">6. Transfer Pasien ke Ruang Rawat</div>
+              <div class="step-desc">Perawat admisi mengantar pasien ke ruang rawat inap. Lakukan serah terima pasien dengan perawat ruangan secara resmi (SBAR: Situation, Background, Assessment, Recommendation). Serahkan berkas rekam medis lengkap.</div>
+              <div class="step-tasks">
+                <span class="task-chip check">Serah terima dengan SBAR</span>
+                <span class="task-chip doc">Berkas RM diserahkan</span>
+                <span class="task-chip info">Perkenalkan perawat ruangan</span>
+                <span class="task-chip check">Pasang gelang identitas</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- FASE 4: ASUHAN KEPERAWATAN -->
+      <div class="flow-phase">
+        <div class="phase-label">Perawatan</div>
+        <div class="flow-steps">
+
+          <div class="step-row">
+            <div class="step-icon icon-green">🏠</div>
+            <div class="step-card">
+              <div class="step-title">7. Orientasi Ruangan & Asesmen Awal</div>
+              <div class="step-desc">Perawat ruangan mengorientasikan pasien dan keluarga: lokasi kamar mandi, nurse call, loker, jam besuk, aturan ruangan. Lakukan asesmen keperawatan awal secara lengkap: nyeri, risiko jatuh, risiko decubitus, status gizi, psikologis.</div>
+              <div class="step-tasks">
+                <span class="task-chip info">Orientasi fasilitas kamar</span>
+                <span class="task-chip check">Asesmen nyeri (VAS/NRS)</span>
+                <span class="task-chip check">Skala risiko jatuh (Morse)</span>
+                <span class="task-chip check">Skala Braden (decubitus)</span>
+                <span class="task-chip check">Skrining gizi (MNA/NRS)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-row">
+            <div class="step-icon icon-blue">👨‍⚕️</div>
+            <div class="step-card">
+              <div class="step-title">8. Visite Dokter & Rencana Asuhan</div>
+              <div class="step-desc">Dokter penanggung jawab pasien (DPJP) melakukan visite. Tetapkan diagnosis, rencana terapi, order obat, dan pemeriksaan penunjang. Catat seluruh instruksi di rekam medis. Komunikasikan kepada pasien dan keluarga.</div>
+              <div class="step-tasks">
+                <span class="task-chip doc">Order DPJP tercatat di RM</span>
+                <span class="task-chip info">Informed kepada keluarga</span>
+                <span class="task-chip check">Konsultasi spesialis (jika perlu)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-row">
+            <div class="step-icon icon-teal">🔄</div>
+            <div class="step-card">
+              <div class="step-title">9. Pelayanan Selama Perawatan</div>
+              <div class="step-desc">Perawatan harian meliputi monitoring kondisi, pemberian obat dan terapi, pelaksanaan tindakan medis/keperawatan, pemeriksaan penunjang lanjutan, konsultasi multidisiplin, edukasi kesehatan, dan dukungan psikososial.</div>
+              <div class="step-tasks">
+                <span class="task-chip check">Monitoring vital sign berkala</span>
+                <span class="task-chip check">Pemberian obat sesuai order</span>
+                <span class="task-chip info">Edukasi harian pasien & keluarga</span>
+                <span class="task-chip doc">Dokumentasi asuhan keperawatan</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- FASE 5: PEMULANGAN -->
+      <div class="flow-phase">
+        <div class="phase-label">Pemulangan</div>
+        <div class="flow-steps">
+
+          <div class="decision-row">
+            <div class="diamond">Kondisi Pasien Siap Pulang?</div>
+          </div>
+
+          <div class="parallel-container">
+            <div class="parallel-card" style="border-top:3px solid var(--success);">
+              <div style="font-weight:700; font-size:12px; color:var(--success); margin-bottom:6px;">✅ Kondisi Membaik → PULANG</div>
+              <div style="font-size:11.5px; color:var(--gray); line-height:1.7;">
+                Dokter buat surat KRS → Resume medis disiapkan → Edukasi discharge → Obat pulang dari farmasi → Penyelesaian administrasi → Pasien pulang
+              </div>
+            </div>
+            <div class="parallel-card" style="border-top:3px solid var(--warning);">
+              <div style="font-weight:700; font-size:12px; color:#856404; margin-bottom:6px;">⚠️ Perlu Tindakan Lanjut</div>
+              <div style="font-size:11.5px; color:var(--gray); line-height:1.7;">
+                Perlu ICU/ICCU → Transfer ke ruang intensif | Perlu operasi → Koordinasi kamar operasi | Perlu rujukan → Siapkan surat & transportasi
+              </div>
+            </div>
+          </div>
+
+          <div class="step-row" style="margin-top:8px;">
+            <div class="step-icon icon-green">📄</div>
+            <div class="step-card">
+              <div class="step-title">10. Discharge Planning & Resume Medis</div>
+              <div class="step-desc">Siapkan resume medis (ringkasan riwayat penyakit, tindakan, hasil lab, obat pulang). Edukasi discharge: cara perawatan di rumah, aktivitas, diet, obat yang harus diminum, tanda bahaya, jadwal kontrol poliklinik.</div>
+              <div class="step-tasks">
+                <span class="task-chip doc">Resume medis lengkap</span>
+                <span class="task-chip doc">Surat kontrol poli</span>
+                <span class="task-chip info">Edukasi tertulis (lembar discharge)</span>
+                <span class="task-chip doc">Surat keterangan sakit/istirahat</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-row">
+            <div class="step-icon icon-red">💰</div>
+            <div class="step-card">
+              <div class="step-title">11. Penyelesaian Administrasi & Billing</div>
+              <div class="step-desc">Petugas kasir menyiapkan tagihan final. Rincian biaya dijelaskan secara transparan kepada keluarga. Proses pembayaran sesuai jenis jaminan. Berikan kwitansi resmi dan berkas klaim. Pastikan pasien puas sebelum meninggalkan RS.</div>
+              <div class="step-tasks">
+                <span class="task-chip pay">Rincian tagihan transparan</span>
+                <span class="task-chip doc">Kwitansi resmi</span>
+                <span class="task-chip check">Berkas klaim BPJS/asuransi lengkap</span>
+                <span class="task-chip info">Survei kepuasan pasien</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-row">
+            <div class="step-icon icon-cyan">⭐</div>
+            <div class="step-card">
+              <div class="step-title">12. Pelepasan & Follow-up</div>
+              <div class="step-desc">Perawat mengantar pasien hingga ke kendaraan jika diperlukan. Sampaikan salam perpisahan yang hangat. Lakukan follow-up telepon H+1 dan H+3 setelah pulang untuk memantau kondisi pasien dan kepuasan layanan.</div>
+              <div class="step-tasks">
+                <span class="task-chip check">Antar ke kendaraan</span>
+                <span class="task-chip info">Follow-up telepon H+1 & H+3</span>
+                <span class="task-chip doc">Dokumentasi selesai</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============ DOKUMEN ============ -->
+  <div class="tab-pane" id="tab-dokumen">
+    <div class="section-title">Checklist Kelengkapan Dokumen</div>
+    <p class="section-sub">Daftar dokumen yang harus dipenuhi dalam setiap tahapan pelayanan pasien.</p>
+
+    <div class="checklist-box">
+      <div class="checklist-title">📥 Dokumen Registrasi (Semua Pasien)</div>
+      <div class="checklist-grid">
+        <div class="checklist-item"><div class="check-mark">✓</div> KTP / Kartu Keluarga / SIM (identitas diri)</div>
+        <div class="checklist-item"><div class="check-mark">✓</div> Kartu BPJS Kesehatan (jika peserta JKN)</div>
+        <div class="checklist-item"><div class="check-mark">✓</div> Kartu asuransi swasta (jika ada)</div>
+        <div class="checklist-item"><div class="check-mark">✓</div> Surat rujukan (untuk pasien BPJS non-IGD)</div>
+        <div class="checklist-item"><div class="check-mark">✓</div> Kartu berobat RS (pasien lama)</div>
+        <div class="checklist-item"><div class="check-mark">✓</div> Hasil pemeriksaan sebelumnya (jika ada)</div>
+        <div class="checklist-item"><div class="check-mark">✓</div> Formulir pendaftaran pasien baru (terisi lengkap)</div>
+        <div class="checklist-item"><div class="check-mark">✓</div> Nomor rekam medis (diberikan oleh RS)</div>
+      </div>
+    </div>
+
+    <div class="checklist-box">
+      <div class="checklist-title" style="color:var(--inpatient)">🛏️ Dokumen Tambahan Rawat Inap</div>
+      <div class="checklist-grid">
+        <div class="checklist-item"><div class="check-mark" style="background:var(--inpatient)">✓</div> Surat pengantar rawat inap dari dokter (DPJP)</div>
+        <div class="checklist-item"><div class="check-mark" style="background:var(--inpatient)">✓</div> Formulir general consent (persetujuan umum)</div>
+        <div class="checklist-item"><div class="check-mark" style="background:var(--inpatient)">✓</div> Informed consent tindakan medis (per tindakan)</div>
+        <div class="checklist-item"><div class="check-mark" style="background:var(--inpatient)">✓</div> Formulir asesmen awal keperawatan</div>
+        <div class="checklist-item"><div class="check-mark" style="background:var(--inpatient)">✓</div> Formulir asesmen medis awal (DPJP)</div>
+        <div class="checklist-item"><div class="check-mark" style="background:var(--inpatient)">✓</div> SEP BPJS (Surat Eligibilitas Peserta)</div>
+        <div class="checklist-item"><div class="check-mark" style="background:var(--inpatient)">✓</div> Approval letter (untuk pasien asuransi swasta)</div>
+        <div class="checklist-item"><div class="check-mark" style="background:var(--inpatient)">✓</div> Surat jaminan perusahaan (jika tanggungan perusahaan)</div>
+        <div class="checklist-item"><div class="check-mark" style="background:var(--inpatient)">✓</div> Formulir asesmen risiko jatuh & decubitus</div>
+        <div class="checklist-item"><div class="check-mark" style="background:var(--inpatient)">✓</div> Skrining gizi awal</div>
+      </div>
+    </div>
+
+    <div class="checklist-box">
+      <div class="checklist-title" style="color:var(--outpatient)">📤 Dokumen Pemulangan Rawat Inap</div>
+      <div class="checklist-grid">
+        <div class="checklist-item"><div class="check-mark" style="background:var(--outpatient)">✓</div> Surat Keterangan Keluar RS (KRS)</div>
+        <div class="checklist-item"><div class="check-mark" style="background:var(--outpatient)">✓</div> Resume medis (ringkasan perawatan)</div>
+        <div class="checklist-item"><div class="check-mark" style="background:var(--outpatient)">✓</div> Surat kontrol ulang / jadwal poli</div>
+        <div class="checklist-item"><div class="check-mark" style="background:var(--outpatient)">✓</div> Lembar edukasi discharge (tertulis)</div>
+        <div class="checklist-item"><div class="check-mark" style="background:var(--outpatient)">✓</div> Resep obat pulang</div>
+        <div class="checklist-item"><div class="check-mark" style="background:var(--outpatient)">✓</div> Surat keterangan sakit / istirahat kerja</div>
+        <div class="checklist-item"><div class="check-mark" style="background:var(--outpatient)">✓</div> Berkas klaim asuransi / BPJS (lengkap)</div>
+        <div class="checklist-item"><div class="check-mark" style="background:var(--outpatient)">✓</div> Kwitansi dan rincian biaya perawatan</div>
+        <div class="checklist-item"><div class="check-mark" style="background:var(--outpatient)">✓</div> Hasil lab / radiologi (salinan untuk pasien)</div>
+        <div class="checklist-item"><div class="check-mark" style="background:var(--outpatient)">✓</div> Formulir survei kepuasan pasien</div>
+      </div>
+    </div>
+
+    <div style="background:#FFF3E0; border-radius:14px; padding:20px; border:1.5px solid #FFB74D; margin-top:8px;">
+      <div style="font-weight:700; font-size:14px; color:#E65100; margin-bottom:8px;">⚠️ Catatan Penting Rekam Medis</div>
+      <ul style="font-size:13px; color:#BF360C; line-height:1.9; padding-left:16px;">
+        <li>Seluruh pencatatan di rekam medis harus menggunakan <strong>tinta hitam/biru permanen</strong> (tidak boleh pensil)</li>
+        <li>Setiap kesalahan penulisan dikoreksi dengan <strong>satu garis lurus</strong>, diberi paraf dan tanggal — TIDAK BOLEH dihapus atau ditip-ex</li>
+        <li>Rekam medis adalah <strong>milik RS</strong>, pasien berhak mendapat salinan (fotokopi) sesuai permintaan</li>
+        <li>Kerahasiaan rekam medis dijaga sesuai <strong>UU Kesehatan dan etika profesi</strong></li>
+        <li>Rekam medis aktif disimpan minimum <strong>5 tahun</strong> sejak terakhir berobat</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ============ TIPS ============ -->
+  <div class="tab-pane" id="tab-tips">
+    <div class="section-title">Tips & Standar Layanan Prima</div>
+    <p class="section-sub">Panduan untuk meningkatkan kualitas pengalaman pasien dan keluarga di setiap titik interaksi.</p>
+
+    <div class="tips-grid">
+      <div class="tip-card">
+        <div class="tip-icon">😊</div>
+        <div class="tip-title">Salam & Sambutan (5S)</div>
+        <div class="tip-text">Terapkan: Senyum, Salam, Sapa, Sopan, Santun di setiap interaksi. Gunakan nama pasien saat berbicara. Lakukan kontak mata yang hangat namun tidak mengintimidasi.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">⏱️</div>
+        <div class="tip-title">Manajemen Waktu Tunggu</div>
+        <div class="tip-text">Selalu informasikan estimasi waktu tunggu sejak awal. Jika ada keterlambatan, sampaikan permohonan maaf dan alasannya secara proaktif. Target: admisi rawat jalan ≤15 menit, rawat inap ≤30 menit.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🗣️</div>
+        <div class="tip-title">Komunikasi Efektif</div>
+        <div class="tip-text">Gunakan bahasa yang mudah dipahami (hindari istilah medis berlebihan). Pastikan pasien memahami dengan teknik teach-back ("coba ibu jelaskan kembali cara minum obatnya"). Tanyakan apakah ada pertanyaan.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">👨‍👩‍👧</div>
+        <div class="tip-title">Libatkan Keluarga</div>
+        <div class="tip-text">Keluarga adalah mitra perawatan, bukan pengunjung semata. Libatkan dalam setiap edukasi dan pengambilan keputusan. Tunjuk satu narahubung keluarga untuk kemudahan komunikasi.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🔒</div>
+        <div class="tip-title">Privasi & Kerahasiaan</div>
+        <div class="tip-text">Lakukan pemeriksaan di ruang tertutup atau dengan tirai/screen. Jangan membicarakan kondisi pasien di tempat umum. Verifikasi identitas sebelum memberikan informasi medis kepada keluarga.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">♿</div>
+        <div class="tip-title">Layanan Prioritas & Inklusi</div>
+        <div class="tip-text">Berikan layanan prioritas kepada: lansia ≥60th, ibu hamil, balita, pasien disabilitas, dan pasien dengan nyeri hebat. Sediakan fasilitas aksesibel (kursi roda, jalur khusus, loket prioritas).</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">💡</div>
+        <div class="tip-title">Informasi yang Proaktif</div>
+        <div class="tip-text">Jangan tunggu pasien bertanya — berikan informasi secara proaktif: estimasi waktu, biaya, prosedur berikutnya. Pasang papan informasi dan poster di area strategis.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🛡️</div>
+        <div class="tip-title">Keselamatan Pasien</div>
+        <div class="tip-text">Terapkan "5 Benar" setiap pemberian obat: benar pasien, obat, dosis, rute, dan waktu. Pasang gelang identitas di pergelangan tangan. Laporkan insiden/near-miss tanpa menyalahkan.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">📱</div>
+        <div class="tip-title">Digitalisasi Layanan</div>
+        <div class="tip-text">Manfaatkan teknologi: pendaftaran online/app, antrean digital, display status antrian di layar, notifikasi SMS/WA untuk jadwal dan hasil pemeriksaan. Permudah akses informasi bagi pasien.</div>
+      </div>
+    </div>
+
+    <div style="margin-top:8px; background:linear-gradient(135deg, var(--primary), var(--secondary)); border-radius:16px; padding:28px; color:white;">
+      <div style="font-family:'Playfair Display',serif; font-size:20px; margin-bottom:12px;">📊 Standar Waktu Pelayanan</div>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:8px;">
+        <div style="background:rgba(255,255,255,0.12); border-radius:12px; padding:16px; text-align:center;">
+          <div style="font-size:28px; font-weight:800; color:var(--warm);">≤ 5'</div>
+          <div style="font-size:12px; opacity:0.8; margin-top:4px;">Pasien disambut & diarahkan setelah tiba</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.12); border-radius:12px; padding:16px; text-align:center;">
+          <div style="font-size:28px; font-weight:800; color:var(--warm);">≤ 15'</div>
+          <div style="font-size:12px; opacity:0.8; margin-top:4px;">Proses administrasi rawat jalan selesai</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.12); border-radius:12px; padding:16px; text-align:center;">
+          <div style="font-size:28px; font-weight:800; color:var(--warm);">≤ 30'</div>
+          <div style="font-size:12px; opacity:0.8; margin-top:4px;">Proses admisi & transfer rawat inap</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.12); border-radius:12px; padding:16px; text-align:center;">
+          <div style="font-size:28px; font-weight:800; color:var(--warm);">≤ 60'</div>
+          <div style="font-size:12px; opacity:0.8; margin-top:4px;">Hasil lab cito (emergenci) selesai</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.12); border-radius:12px; padding:16px; text-align:center;">
+          <div style="font-size:28px; font-weight:800; color:var(--warm);">H+1</div>
+          <div style="font-size:12px; opacity:0.8; margin-top:4px;">Follow-up telepon setelah rawat inap</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.12); border-radius:12px; padding:16px; text-align:center;">
+          <div style="font-size:28px; font-weight:800; color:var(--warm);">≥ 80%</div>
+          <div style="font-size:12px; opacity:0.8; margin-top:4px;">Target kepuasan pasien (sangat puas)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function switchTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-' + tabId).classList.add('active');
+    event.currentTarget.classList.add('active');
+  }
+</script>
+</body>
+</html>
